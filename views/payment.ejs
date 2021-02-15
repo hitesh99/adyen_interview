@@ -17,6 +17,13 @@
         <div id="component-container"></div>
         <script>
 
+        let ClientOriginKey = ""
+        async function fetchClientKey() {
+          const response = await fetch('/originKeys');
+          const clientKey = await response.json();
+          ClientOriginKey = clientKey.originKeys['http://localhost:4000']
+        }
+        fetchClientKey()
 
 
             function handleOnChange(state, component) {
@@ -34,7 +41,6 @@
 
             async function handleSubmission(state, component, url) {
                 try {
-                    console.log(state, url, component);
                     const res = await callServer("/api/initiatePayment", state.data);
                     handleServerResponse(res, component);
                 } catch (error) {
@@ -79,16 +85,16 @@
 
             function renderPayment() {
                 const configuration = {
-                    locale: "en_US", // The shopper's locale. For a list of supported locales, see https://docs.adyen.com/online-payments/components-web/localization-components.
-                    environment: "test", // When you're ready to accept live payments, change the value to one of our live environments https://docs.adyen.com/online-payments/components-web#testing-your-integration.
-                    clientKey: "pub.v2.8115650120946270.aHR0cDovL2xvY2FsaG9zdDo0MDAw.qkW8U0At9rzf7Ywm58Wl1S3FB6YFiHc6OCZbTikX-tE", // Your client key. To find out how to generate one, see https://docs.adyen.com/development-resources/client-side-authentication. Web Components versions before 3.10.1 use originKey instead of clientKey.
+                    locale: "en_US", 
+                    environment: "test",
+                    clientKey: ClientOriginKey,
                     paymentMethodsResponse: paymentMethodsResponse, // The payment methods response returned in step 1.
                     onChange: handleOnChange, // Your function for handling onChange event
                     onAdditionalDetails: handleOnAdditionalDetails, // Your function for handling onAdditionalDetails event
                     showPayButton: true,
                     onSubmit: handleSubmission,
                 };
-                console.log(paymentMethodsResponse);
+
 
                 const checkout = new AdyenCheckout(configuration);
                 const card = checkout.create("dropin").mount("#component-container");
@@ -98,12 +104,9 @@
 
             const country = params.get("country");
 
-            console.log(country); // "sai"
-
             fetch("/getPaymentMethod/" + country)
                 .then((resp) => resp.json())
                 .then(function (data) {
-                    console.log(data);
                     paymentMethodsResponse = data;
                     renderPayment();
                 })
