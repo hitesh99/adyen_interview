@@ -28,7 +28,7 @@ Install Adyen
     - npm install --save express @adyen/api-library express-handlebars uuid
 
 Screenshots
-https://share.getcloudapp.com/KouZdx5P
-https://share.getcloudapp.com/9Zu8xvpA
-https://share.getcloudapp.com/2NuEwdDe
-https://share.getcloudapp.com/Qwu9Ev1A
+1. https://share.getcloudapp.com/KouZdx5P
+2. https://share.getcloudapp.com/9Zu8xvpA
+3. https://share.getcloudapp.com/2NuEwdDe
+4. https://share.getcloudapp.com/Qwu9Ev1A
