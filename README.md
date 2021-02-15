@@ -8,4 +8,5 @@ This exericse has been completed in Node JS and EJS along with very simple HTML/
 2. Payments Page
     - Backend processing and server handling based on the Adyen NodeJS documentation
     - Passing hardcoded parameters for currency and currency amount
-
+3. Results Page 
+    - Depending on the payment response, the result page will be displayed
