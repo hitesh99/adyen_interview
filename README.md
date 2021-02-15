@@ -26,3 +26,9 @@ Install EJS
 
 Install Adyen
     - npm install --save express @adyen/api-library express-handlebars uuid
+
+Screenshots
+https://share.getcloudapp.com/KouZdx5P
+https://share.getcloudapp.com/9Zu8xvpA
+https://share.getcloudapp.com/2NuEwdDe
+https://share.getcloudapp.com/Qwu9Ev1A
