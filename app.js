@@ -1,6 +1,7 @@
 //declaration of initial variables
 const express = require('express');
 const app = express();
+const cors = require('cors');
 
 const {
     Client,
@@ -58,6 +59,25 @@ app.get("/result/pending", (req, res) => {
     res.render('pending');
 });
 
+
+app.get("/originKeys", cors(), async (req, res) => {
+    var request = require("request");
+    var options = {
+        method: "POST",
+        url: "https://checkout-test.adyen.com/v1/originKeys",
+        headers: {
+            "X-API-key": process.env.api_key,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ originDomains: ["http://localhost:4000"] }),
+    };
+
+    request(options, function (error, response) {
+        console.log(response.body);
+        if (error) throw new Error(error);
+        res.send(response.body);
+    });
+});
 
 
 // Pass the response to your front end

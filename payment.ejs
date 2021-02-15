@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Payments</title>
+
+        <script src="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.21.1/adyen.js" integrity="sha384-qgB03MgLihAbvkTmWIkmZxFUxyAqJ4Ozk1My6beIRqit6+8e5HFg8ysln5y5FSw0" crossorigin="anonymous"></script>
+        <!-- Adyen provides the SRI hash that you include as the integrity attribute. Refer to our release notes to get the SRI hash for the specific version. https://docs.adyen.com/online-payments/release-notes -->
+
+        <link rel="stylesheet" href="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.21.1/adyen.css" integrity="sha384-KM3xJKzswGJ0xqiPCOHrWUtn0i0LHqEngauvYxSfy0eRtqcImL7ArxjV2HVgeRJ/" crossorigin="anonymous" />
+        <!-- Adyen provides the SRI hash that you include as the integrity attribute. Refer to our release notes to get the SRI hash for the specific version. https://docs.adyen.com/online-payments/release-notes -->
+
+
+    </head>
+    <body>
+        <h1 style="text-align:center">Payments Page</h1>
+        <div id="dropin-container"></div>
+        <div id="component-container"></div>
+        <script>
+
+        let ClientOriginKey = ""
+        async function fetchClientKey() {
+          const response = await fetch('/originKeys');
+          const clientKey = await response.json();
+          ClientOriginKey = clientKey.originKeys['http://localhost:4000']
+        }
+        fetchClientKey()
+
+
+            function handleOnChange(state, component) {
+                state.isValid; // True or false. Specifies if all the information that the shopper provided is valid.
+                state.data; // Provides the data that you need to pass in the `/payments` call.
+                component; // Provides the active component instance that called this event.
+            }
+
+            function handleOnAdditionalDetails(state, component) {
+                state.data; // Provides the data that you need to pass in the `/payments/details` call.
+                component; // Provides the active component instance that called this event.
+            }
+
+            let paymentMethodsResponse = {};
+
+            async function handleSubmission(state, component, url) {
+                try {
+                    const res = await callServer("/api/initiatePayment", state.data);
+                    handleServerResponse(res, component);
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            function handleServerResponse(res, component) {
+                if (res.action) {
+                    component.handleAction(res.action);
+                } else {
+                    switch (res.resultCode) {
+                        case "Authorised":
+                            window.location.href = "/result/success";
+                            break;
+                        case "Pending":
+                        case "Received":
+                            window.location.href = "/result/pending";
+                            break;
+                        case "Refused":
+                            window.location.href = "/result/failed";
+                            break;
+                        default:
+                            window.location.href = "/result/error";
+                            break;
+                    }
+                }
+            }
+
+            async function callServer(url, data) {
+                const res = await fetch(url, {
+                    method: "POST",
+                    body: data ? JSON.stringify(data) : "",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                return await res.json();
+            }
+
+
+            function renderPayment() {
+                const configuration = {
+                    locale: "en_US", 
+                    environment: "test",
+                    clientKey: ClientOriginKey,
+                    paymentMethodsResponse: paymentMethodsResponse, // The payment methods response returned in step 1.
+                    onChange: handleOnChange, // Your function for handling onChange event
+                    onAdditionalDetails: handleOnAdditionalDetails, // Your function for handling onAdditionalDetails event
+                    showPayButton: true,
+                    onSubmit: handleSubmission,
+                };
+
+
+                const checkout = new AdyenCheckout(configuration);
+                const card = checkout.create("dropin").mount("#component-container");
+            }
+
+            const params = new URLSearchParams(window.location.search);
+
+            const country = params.get("country");
+
+            fetch("/getPaymentMethod/" + country)
+                .then((resp) => resp.json())
+                .then(function (data) {
+                    paymentMethodsResponse = data;
+                    renderPayment();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        </script>
+    </body>
+</html>
