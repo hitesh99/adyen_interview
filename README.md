@@ -23,3 +23,6 @@ Install Express
 
 Install EJS
     - npm install ejs
+
+Install Adyen
+    - npm install --save express @adyen/api-library express-handlebars uuid
