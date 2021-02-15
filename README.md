@@ -10,3 +10,16 @@ This exericse has been completed in Node JS and EJS along with very simple HTML/
     - Passing hardcoded parameters for currency and currency amount
 3. Results Page 
     - Depending on the payment response, the result page will be displayed
+
+To install this locally, please run the following commands
+npm install -g npm
+
+Checking your version of npm and Node.js
+node -v
+npm -v
+
+Install Express
+npm install express
+
+Install EJS
+npm install ejs
